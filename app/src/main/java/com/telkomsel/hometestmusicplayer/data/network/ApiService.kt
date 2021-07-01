@@ -8,6 +8,7 @@ import retrofit2.http.Query
 
 interface ApiService {
 
+
     @GET("search")
     fun searchMusic(@Query("term") searchParam: String) : Observable<MusicModel>
 }

@@ -2,10 +2,10 @@ package com.telkomsel.hometestmusicplayer.data.model
 
 data class MusicModel(
     val resultCount: Int,
-    val results: List<Result>
+    val results: List<MusicModelResult>
 )
 
-data class Result(
+data class MusicModelResult(
     val artistId: Int,
     val artistName: String,
     val artistViewUrl: String,
