@@ -3,13 +3,15 @@ package com.telkomsel.hometestmusicplayer.ui.main.view
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -29,6 +31,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private var lastPosition = -1
     private var mediaPlayer: MediaPlayer? = null
     private var musicUrl = ""
+    private var duration = 0
 
     override fun onFirstLaunch(savedInstanceState: Bundle?) {
         musicViewModel = ViewModelProvider(this).get(MusicViewModel::class.java)
@@ -62,6 +65,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 //Log.d("POSITION" , it.toString())
                 currentPosition = it
                 musicUrl = musicAdapter.musics[it].previewUrl
+                duration = musicAdapter.musics[it].trackTimeMillis
                 settingIndicatorMusic(currentPosition, true)
                 stopPlayer()
                 playMusic(musicUrl)
@@ -85,6 +89,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         musicViewModel.searchMusic(valueSearch, "music")
     }
 
+    //observer data from API
     fun observeData() {
         musicViewModel.musicsLiveData.observe(this, Observer {
 
@@ -104,6 +109,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     //play music from api
     fun playMusic(url: String) {
+
         mediaPlayer = MediaPlayer().apply {
             setAudioStreamType(AudioManager.STREAM_MUSIC)
             setDataSource(url)
@@ -111,7 +117,38 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             start()
         }
         settingShowMusicController(View.VISIBLE)
+        updateSeekBar()
     }
+
+    private fun updateSeekBar() {
+        viewBinding.seekBarMusic.max = mediaPlayer!!.duration/1000
+
+        //update status seekbar for 1 second by mediaplayer current status
+        val mHandler = Handler()
+        runOnUiThread(object : Runnable {
+            override fun run() {
+                if (mediaPlayer != null) {
+                    val mCurrentPosition: Int = mediaPlayer!!.getCurrentPosition() / 1000
+                    viewBinding.seekBarMusic.setProgress(mCurrentPosition)
+                }
+                mHandler.postDelayed(this, 1000)
+            }
+        })
+
+
+
+        viewBinding.seekBarMusic.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if(mediaPlayer != null && fromUser){
+                    mediaPlayer!!.seekTo(progress * 1000);
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        })
+    }
+
 
 
     fun stopPlayer() {
@@ -123,13 +160,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     }
 
-    fun pausePlayer() {
-        if (mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.pause()
-        }
-    }
-
-    //show music controller
+    //setting for show/hide layout music controller
     fun settingShowMusicController(view: Int) {
         viewBinding.layoutMusicController.visibility = view
     }

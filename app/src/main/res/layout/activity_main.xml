@@ -76,6 +76,7 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatSeekBar
+            android:id="@+id/seekBarMusic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:progressTint="@color/purple_200"
