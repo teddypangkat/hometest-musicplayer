@@ -1,9 +1,9 @@
 # Home Test Music Player
 
-##**Supported device**
+## **Supported device**
 
-##Supported Feature
+## Supported Feature
 
-##Requirements
+## Requirements
 
-##Build&Deploy
+## Build&Deploy
