@@ -3,26 +3,32 @@ package com.telkomsel.hometestmusicplayer.ui.main.view
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.telkomsel.hometestmusicplayer.R
 import com.telkomsel.hometestmusicplayer.databinding.ActivityMainBinding
 import com.telkomsel.hometestmusicplayer.ui.base.BaseActivity
 import com.telkomsel.hometestmusicplayer.ui.main.adapter.MusicAdapter
 import com.telkomsel.hometestmusicplayer.ui.main.viewmodel.MusicViewModel
 
 
-class MainActivity : BaseActivity<ActivityMainBinding>(){
+class MainActivity : BaseActivity<ActivityMainBinding>() {
 
-    private lateinit var musicViewModel : MusicViewModel
+    private lateinit var musicViewModel: MusicViewModel
     private lateinit var musicAdapter: MusicAdapter
     private var currentPosition = -1
     private var lastPosition = -1
     private var mediaPlayer: MediaPlayer? = null
+    private var musicUrl = ""
 
     override fun onFirstLaunch(savedInstanceState: Bundle?) {
         musicViewModel = ViewModelProvider(this).get(MusicViewModel::class.java)
@@ -43,23 +49,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>(){
         }
     }
 
+    //this function for setting visible enable indicator music
+    private fun settingIndicatorMusic(position: Int, isPlay: Boolean) {
+        val music = musicAdapter.musics[position]
+        music.isPlay = isPlay
+        musicAdapter.notifyItemChanged(position)
+    }
+
     private fun initAdapter() {
         if (!::musicAdapter.isInitialized) {
             musicAdapter = MusicAdapter {
+                //Log.d("POSITION" , it.toString())
                 currentPosition = it
-                    val music = musicAdapter.musics[currentPosition]
-                    music.isPlay = true
-                    musicAdapter.notifyItemChanged(currentPosition)
-                    stopPlayer()
-                    playMusic(music.previewUrl)
+                musicUrl = musicAdapter.musics[it].previewUrl
+                settingIndicatorMusic(currentPosition, true)
+                stopPlayer()
+                playMusic(musicUrl)
 
+
+                //setting for visible enable music indicator
                 if (lastPosition != -1) {
-                    val lastMusic = musicAdapter.musics[lastPosition]
-                    lastMusic.isPlay = false
-                    musicAdapter.notifyItemChanged(lastPosition)
-                    //stopMusic()
+                         settingIndicatorMusic(lastPosition, false)
                 }
-                    lastPosition = currentPosition
+                lastPosition = currentPosition
                 //playMusic(music.previewUrl)
 
             }
@@ -90,6 +102,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(){
     }
 
 
+    //play music from api
     fun playMusic(url: String) {
         mediaPlayer = MediaPlayer().apply {
             setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -97,8 +110,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(){
             prepare() // might take long! (for buffering, etc)
             start()
         }
-
+        settingShowMusicController(View.VISIBLE)
     }
+
 
     fun stopPlayer() {
         mediaPlayer = if (mediaPlayer != null && mediaPlayer!!.isPlaying()) {
@@ -109,23 +123,98 @@ class MainActivity : BaseActivity<ActivityMainBinding>(){
         }
     }
 
+    fun pausePlayer() {
+        if (mediaPlayer!!.isPlaying) {
+            mediaPlayer!!.pause()
+        }
+    }
+
+    //show music controller
+    fun settingShowMusicController(view: Int) {
+        viewBinding.layoutMusicController.visibility = view
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopPlayer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopPlayer()
+    }
+
     override fun initUiListener() {
 
         viewBinding.edSearch.setOnEditorActionListener { _, actionId, event ->
             if (actionId === EditorInfo.IME_ACTION_SEARCH) {
-                searchMusic(viewBinding.edSearch.text.toString())
+                val valueSearch = viewBinding.edSearch.text.toString()
+
+                if (valueSearch.isEmpty())
+                    viewBinding.edSearch.error = "Not be empty"
+                 else
+                    searchMusic(valueSearch)
+
                 return@setOnEditorActionListener true
             }
             false
         }
 
+
+        viewBinding.btnPause.setOnClickListener {
+
+            if (mediaPlayer!!.isPlaying) {
+                viewBinding.btnPause.setImageResource(R.drawable.ic_play)
+                mediaPlayer!!.pause()
+            } else {
+                viewBinding.btnPause.setImageResource(R.drawable.ic_pause)
+                playMusic(musicUrl)
+            }
+        }
+
+
+        //next play music
+        viewBinding.btnNext.setOnClickListener {
+            val music = musicAdapter.musics
+            val nextPosition = currentPosition + 1
+            //cek validate limit list
+            if (currentPosition < music.size) {
+                //update view current
+                stopPlayer()
+                settingIndicatorMusic(currentPosition, false)
+
+                settingIndicatorMusic(nextPosition, true)
+                playMusic(music[nextPosition].previewUrl)
+                //update current position
+                currentPosition = nextPosition
+
+            }
+        }
+
+
+        //next play music
+        viewBinding.btnPrev.setOnClickListener {
+            val music = musicAdapter.musics
+            val prevPosition = currentPosition  - 1
+            //cek validate limit list
+            if (currentPosition != 0) {
+                //update view current
+                stopPlayer()
+                settingIndicatorMusic(currentPosition, false)
+
+                settingIndicatorMusic(prevPosition, true)
+                playMusic(music[prevPosition].previewUrl)
+                //update current position
+                currentPosition = prevPosition
+
+            }
+        }
+
     }
 
-    override fun bindToolbar(): Toolbar?  = null
+    override fun bindToolbar(): Toolbar? = null
 
     override fun getUiBinding() = ActivityMainBinding.inflate(layoutInflater)
-
-
 
 
 }
