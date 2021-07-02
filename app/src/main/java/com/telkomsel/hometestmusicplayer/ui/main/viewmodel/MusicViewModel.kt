@@ -11,9 +11,9 @@ class MusicViewModel : ViewModel() {
     var musicsLiveData = MutableLiveData<MusicModel>()
     var error = MutableLiveData<Throwable>()
 
-    fun searchMusic(paramSearch: String) {
+    fun searchMusic(paramSearch: String, media: String) {
 
-        repository.searchMusic(paramSearch, {
+        repository.searchMusic(paramSearch, media, {
             //if response search music success
             musicsLiveData.postValue(it)
         } , {

@@ -10,5 +10,5 @@ interface ApiService {
 
 
     @GET("search")
-    fun searchMusic(@Query("term") searchParam: String) : Observable<MusicModel>
+    fun searchMusic(@Query("term") searchParam: String, @Query("media") media: String) : Observable<MusicModel>
 }

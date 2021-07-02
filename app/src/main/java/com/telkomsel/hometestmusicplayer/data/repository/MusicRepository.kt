@@ -12,8 +12,8 @@ class MusicRepository {
     private val apiService = RetrofitClient.create()
     private val compositeDisposable = CompositeDisposable()
 
-    fun searchMusic(searchParam: String, onResult: (MusicModel)-> Unit, onError: (Throwable) -> Unit) {
-            apiService.searchMusic(searchParam)
+    fun searchMusic(searchParam: String, media: String, onResult: (MusicModel)-> Unit, onError: (Throwable) -> Unit) {
+            apiService.searchMusic(searchParam, media)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : ApiObserver<MusicModel>(compositeDisposable) {
