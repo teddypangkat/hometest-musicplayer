@@ -10,15 +10,15 @@ Android application for music player, all the data music was get from [iTunes Af
 ### Supported Feature
 - Search Music
 - List Music
-- Play, Stop, Next & Pause Song
+- Play, Stop, Pause, Next & Prev Song
 
 ### Requirements
 - Android Studio
 - Gradle 6.5
-#### Library
-     - Retrofit
-     - Piccaso
-     - RxJava & RxAndroid
-     - Taishi-Y - MusicIndicator
+- Library
+  - Retrofit
+  - Piccaso
+  - RxJava & RxAndroid
+  - Taishi-Y - MusicIndicator
 
 ### Build & Deploy
