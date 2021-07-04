@@ -9,12 +9,18 @@ import io.reactivex.schedulers.Schedulers
 
 class MusicRepository {
 
+    //init object
     private val apiService = RetrofitClient.create()
     private val compositeDisposable = CompositeDisposable()
 
-    fun searchMusic(searchParam: String, media: String, onResult: (MusicModel)-> Unit, onError: (Throwable) -> Unit) {
+    fun searchMusic(searchParam: String, media: String,
+                    onResult: (MusicModel)-> Unit,
+                    onError: (Throwable) -> Unit) {
+
             apiService.searchMusic(searchParam, media)
+                    //run on new thread
                 .subscribeOn(Schedulers.io())
+                    //run on main thread
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : ApiObserver<MusicModel>(compositeDisposable) {
                     override fun onApiSuccess(data: MusicModel) {

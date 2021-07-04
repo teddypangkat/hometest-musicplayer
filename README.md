@@ -1,6 +1,6 @@
 # Home Test Music Player
 
-## **Supported device**
+## **Supported Device**
 
 ## Supported Feature
 

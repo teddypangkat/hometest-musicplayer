@@ -21,6 +21,7 @@ import com.telkomsel.hometestmusicplayer.databinding.ActivityMainBinding
 import com.telkomsel.hometestmusicplayer.ui.base.BaseActivity
 import com.telkomsel.hometestmusicplayer.ui.main.adapter.MusicAdapter
 import com.telkomsel.hometestmusicplayer.ui.main.viewmodel.MusicViewModel
+import com.telkomsel.hometestmusicplayer.util.PositionNumberList
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
@@ -51,6 +52,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             )
         }
     }
+
 
     //this function for setting visible enable indicator music
     private fun settingIndicatorMusic(position: Int, isPlay: Boolean) {
@@ -116,13 +118,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             prepare() // might take long! (for buffering, etc)
             start()
         }
+        viewBinding.btnPause.setImageResource(R.drawable.ic_pause)
         settingShowMusicController(View.VISIBLE)
         updateSeekBar()
     }
 
     private fun updateSeekBar() {
         viewBinding.seekBarMusic.max = mediaPlayer!!.duration/1000
-
         //update status seekbar for 1 second by mediaplayer current status
         val mHandler = Handler()
         runOnUiThread(object : Runnable {
@@ -175,6 +177,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         stopPlayer()
     }
 
+
+
     override fun initUiListener() {
 
         viewBinding.edSearch.setOnEditorActionListener { _, actionId, event ->
@@ -184,6 +188,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 if (valueSearch.isEmpty())
                     viewBinding.edSearch.error = "Not be empty"
                  else
+                    currentPosition = -1
+                    lastPosition = -1
                     searchMusic(valueSearch)
 
                 return@setOnEditorActionListener true
@@ -207,7 +213,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         //next play music
         viewBinding.btnNext.setOnClickListener {
             val music = musicAdapter.musics
-            val nextPosition = currentPosition + 1
+            val nextPosition = PositionNumberList.nextPosition(currentPosition)
             //cek validate limit list
             if (currentPosition < music.size) {
                 //update view current
@@ -218,6 +224,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 playMusic(music[nextPosition].previewUrl)
                 //update current position
                 currentPosition = nextPosition
+                musicUrl = musicAdapter.musics[nextPosition].previewUrl
 
             }
         }
@@ -226,7 +233,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         //next play music
         viewBinding.btnPrev.setOnClickListener {
             val music = musicAdapter.musics
-            val prevPosition = currentPosition  - 1
+            val prevPosition = PositionNumberList.prevPosition(currentPosition)
             //cek validate limit list
             if (currentPosition != 0) {
                 //update view current
@@ -237,6 +244,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 playMusic(music[prevPosition].previewUrl)
                 //update current position
                 currentPosition = prevPosition
+                musicUrl = musicAdapter.musics[prevPosition].previewUrl
+
 
             }
         }

@@ -1,5 +1,6 @@
 package com.telkomsel.hometestmusicplayer.ui.main.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.telkomsel.hometestmusicplayer.data.model.MusicModel
@@ -21,4 +22,8 @@ class MusicViewModel : ViewModel() {
         })
     }
 
+
+    fun getMusic() : LiveData<MusicModel> {
+        return musicsLiveData
+    }
 }
