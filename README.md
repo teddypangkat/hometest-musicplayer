@@ -35,4 +35,4 @@ To build and run your app, follow these steps:
 
 For deploy in the toolbar, select menu Build -> Build Bunlde(s)/APK(s) to get .apk or Android App Bundle (aab)
 
-for detail see [Build and run your app] (https://developer.android.com/studio/run)
+for detail see [Build and run your app](https://developer.android.com/studio/run)
