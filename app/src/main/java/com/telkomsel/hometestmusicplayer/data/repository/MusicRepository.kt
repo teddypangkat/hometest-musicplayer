@@ -32,4 +32,9 @@ class MusicRepository {
                     }
                 })
     }
+
+    fun onDestroy(){
+        compositeDisposable.clear()
+    }
+
 }

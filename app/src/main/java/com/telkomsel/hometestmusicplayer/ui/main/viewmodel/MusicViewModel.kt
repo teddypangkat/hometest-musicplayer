@@ -26,4 +26,9 @@ class MusicViewModel : ViewModel() {
     fun getMusic() : LiveData<MusicModel> {
         return musicsLiveData
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        repository.onDestroy()
+    }
 }

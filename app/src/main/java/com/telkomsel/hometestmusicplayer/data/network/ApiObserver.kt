@@ -8,7 +8,6 @@ abstract  class ApiObserver<T> constructor(private val compositeDisposable: Comp
     Observer<T> {
 
     override fun onComplete() {
-
     }
 
     override fun onSubscribe(d: Disposable) {
