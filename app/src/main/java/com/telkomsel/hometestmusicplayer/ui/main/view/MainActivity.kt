@@ -99,14 +99,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     //observer data from API
     fun observeData() {
         musicViewModel.musicsLiveData.observe(this, Observer {
-
+            //if call search from api success
             //validate empty data
+            dismissDialog()
             if (!it.results.isEmpty()) {
-                //if call search from api success
                 viewBinding.emptyLayout.visibility = View.GONE
                 viewBinding.recMusic.visibility = View.VISIBLE
                 musicAdapter.musics = it.results
-                dismissDialog()
             } else {
                 viewBinding.emptyLayout.visibility = View.VISIBLE
                 viewBinding.recMusic.visibility = View.GONE
@@ -117,7 +116,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
             //if error
             dismissDialog()
-            Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -198,15 +197,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         viewBinding.edSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 //make delay 3 second for searching music
-                Handler(Looper.getMainLooper()).postDelayed( {
 
-                   //call api search
-                    currentPosition = 0
-                    lastPosition = -1
-                    searchMusic(s.toString())
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        //call api search
+                        if (s.toString().isNotEmpty()) {
+                            currentPosition = -1
+                            lastPosition = -1
+                            searchMusic(s.toString())
+                        }
 
-                }, 3000)
-            }
+                    }, 3000)
+                }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
