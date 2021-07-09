@@ -4,47 +4,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.main.view.MainActivity">
 
     <LinearLayout
         android:id="@+id/layout_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/ed_search"
-        android:hint="Search Artist"
-        android:gravity="center"
-        android:background="@drawable/rounded_field"
-        android:padding="@dimen/dimens_8dp"
-        android:inputType="text"
-        android:textSize="@dimen/size_14sp"
-        android:imeOptions="actionSearch"
-        android:layout_margin="@dimen/dimens_12dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recMusic"
-        tools:listitem="@layout/item_music"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/ed_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dimens_12dp"
+            android:background="@drawable/rounded_field"
+            android:gravity="center"
+            android:hint="Search Artist"
+            android:inputType="text"
+            android:padding="@dimen/dimens_8dp"
+            android:textSize="@dimen/size_14sp" />
 
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/empty_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/ic_empty" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Empty Data" />
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recMusic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:listitem="@layout/item_music" />
+
+    </LinearLayout>
 
 
     <LinearLayout
         android:id="@+id/layout_music_controller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_above="@id/layout_content"
+        android:layout_alignParentBottom="true"
         android:background="@color/ligh_grey"
+        android:orientation="vertical"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:orientation="vertical">
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,21 +77,21 @@
                 android:layout_width="@dimen/dimens_56dp"
                 android:layout_height="@dimen/dimens_56dp"
                 android:layout_marginEnd="@dimen/dimens_24dp"
-                android:src="@drawable/ic_prev"/>
+                android:src="@drawable/ic_prev" />
 
 
             <ImageView
                 android:id="@+id/btn_pause"
                 android:layout_width="@dimen/dimens_56dp"
                 android:layout_height="@dimen/dimens_56dp"
-                android:src="@drawable/ic_pause"/>
+                android:src="@drawable/ic_pause" />
 
             <ImageView
                 android:id="@+id/btn_next"
-                android:layout_marginStart="@dimen/dimens_24dp"
                 android:layout_width="@dimen/dimens_56dp"
                 android:layout_height="@dimen/dimens_56dp"
-                android:src="@drawable/ic_next"/>
+                android:layout_marginStart="@dimen/dimens_24dp"
+                android:src="@drawable/ic_next" />
 
         </LinearLayout>
 
@@ -79,8 +99,8 @@
             android:id="@+id/seekBarMusic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:progressTint="@color/purple_200"
-            android:progress="0"/>
+            android:progress="0"
+            android:progressTint="@color/purple_200" />
 
 
     </LinearLayout>

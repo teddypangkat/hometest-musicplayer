@@ -5,6 +5,8 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -65,19 +67,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         if (!::musicAdapter.isInitialized) {
             musicAdapter = MusicAdapter {
                 //Log.d("POSITION" , it.toString())
-                currentPosition = it
-                musicUrl = musicAdapter.musics[it].previewUrl
-                duration = musicAdapter.musics[it].trackTimeMillis
-                settingIndicatorMusic(currentPosition, true)
-                stopPlayer()
-                playMusic(musicUrl)
+                //validate daouble click item list
+                    currentPosition = it
+
+                    musicUrl = musicAdapter.musics[it].previewUrl
+                    duration = musicAdapter.musics[it].trackTimeMillis
+                    settingIndicatorMusic(currentPosition, true)
+                    stopPlayer()
+                    playMusic(musicUrl)
+
+                    //setting for visible enable music indicator
+                    if (lastPosition != -1 && lastPosition != currentPosition) {
+                        settingIndicatorMusic(lastPosition, false)
+                    }
+                    lastPosition = currentPosition
 
 
-                //setting for visible enable music indicator
-                if (lastPosition != -1) {
-                         settingIndicatorMusic(lastPosition, false)
-                }
-                lastPosition = currentPosition
                 //playMusic(music.previewUrl)
 
             }
@@ -95,9 +100,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     fun observeData() {
         musicViewModel.musicsLiveData.observe(this, Observer {
 
-            //if call search from api success
-            musicAdapter.musics = it.results
-            dismissDialog()
+            //validate empty data
+            if (!it.results.isEmpty()) {
+                //if call search from api success
+                viewBinding.emptyLayout.visibility = View.GONE
+                viewBinding.recMusic.visibility = View.VISIBLE
+                musicAdapter.musics = it.results
+                dismissDialog()
+            } else {
+                viewBinding.emptyLayout.visibility = View.VISIBLE
+                viewBinding.recMusic.visibility = View.GONE
+            }
         })
 
         musicViewModel.error.observe(this, Observer {
@@ -181,21 +194,42 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     override fun initUiListener() {
 
-        viewBinding.edSearch.setOnEditorActionListener { _, actionId, event ->
-            if (actionId === EditorInfo.IME_ACTION_SEARCH) {
-                val valueSearch = viewBinding.edSearch.text.toString()
 
-                if (valueSearch.isEmpty())
-                    viewBinding.edSearch.error = "Not be empty"
-                 else
-                    currentPosition = -1
+        viewBinding.edSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                //make delay 3 second for searching music
+                Handler(Looper.getMainLooper()).postDelayed( {
+
+                   //call api search
+                    currentPosition = 0
                     lastPosition = -1
-                    searchMusic(valueSearch)
+                    searchMusic(s.toString())
 
-                return@setOnEditorActionListener true
+                }, 3000)
             }
-            false
-        }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
+//        viewBinding.edSearch.setOnEditorActionListener { _, actionId, event ->
+//            if (actionId === EditorInfo.IME_ACTION_SEARCH) {
+//                val valueSearch = viewBinding.edSearch.text.toString()
+//
+//                if (valueSearch.isEmpty())
+//                    viewBinding.edSearch.error = "Not be empty"
+//                 else
+//                    currentPosition = -1
+//                    lastPosition = -1
+//                    searchMusic(valueSearch)
+//
+//                return@setOnEditorActionListener true
+//            }
+//            false
+//        }
 
 
         viewBinding.btnPause.setOnClickListener {
